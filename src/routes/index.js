@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { NavigationContainer } from '@react-navigation/native';
 import AuthenticationScreen from '../pages/auth/AuthenticationScreen';
 import OtpScreen from '../pages/auth/OtpScreen';
+import SplashScreen from '../pages/SplashScreen';
 
 
 
@@ -17,7 +18,13 @@ const Stack = createNativeStackNavigator();
 const Routes = () => {
     return(
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator initialRouteName='SplashScreen'>
+
+                <Stack.Screen
+                    name="SplashScreen"
+                    component={SplashScreen}
+                    options={{ headerShown: false}}
+                />
            
                 <Stack.Screen
                     name = "Authentication" 
