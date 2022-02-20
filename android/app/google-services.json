@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "402144149957-nmb73kl4r0tug69dplj3pah39b86po55.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.epuskesmas",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
           "client_id": "402144149957-eogu4luesmedb76l22dr2vf16o5aaitl.apps.googleusercontent.com",
           "client_type": 3
         }

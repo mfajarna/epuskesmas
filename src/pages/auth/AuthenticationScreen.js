@@ -1,36 +1,27 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import auth from '@react-native-firebase/auth'
+import { ILOtp } from '../../assets/illustration'
+import Gap from '../../components/atoms/Gap'
+import { normalizeFont } from '../../utils/normalizeFont'
+import { fonts } from '../../utils/fonts'
 
 const AuthenticationScreen = ({navigation}) => {
 
   let textInput = useRef(null)
-  const[phoneNumber, setPhoneNumber] = useState()
+  const[phoneNumber, setPhoneNumber] = useState("")
   const[focusInput, setFocusInput] = useState(true)
+
 
   // if null, no sms has been sent
   const[confirm, setConfirm] = useState(null)
 
-  const[code, setCode] = useState('')
 
   const signInWithPhoneNumber = async () => {
       const confirmation = await auth.signInWithPhoneNumber(phoneNumber)
 
       setConfirm(confirmation)
   }
-
-  const confirmCode = async () => {
-    try{
-      await confirm.confirm(code)
-
-    }catch(error)
-    {
-      console.log('invalid code')
-    }
-  }
-
-
-
 
   const onChangePhone = (number) => {
       setPhoneNumber(number)
@@ -40,16 +31,25 @@ const AuthenticationScreen = ({navigation}) => {
       
       if(phoneNumber)
       {
+        try{
+          const confirmation = await auth().signInWithPhoneNumber("+62"+phoneNumber)
+        
 
-        const confirmation = await auth().signInWithPhoneNumber("+6281388669869")
 
-        console.log(confirmation)
-
-
-        // navigation.navigate('InputOTP')
+          // console.log('confirm: ',confirm)
+  
+          navigation.navigate('InputOTP', {
+            phone: phoneNumber,
+            code: confirmation
+          })
+        }catch(error)
+        {
+            Alert.alert('Whoops', error.message())
+        }
+       
       }if(phoneNumber === "")
       {
-        Alert.alert("Tolong isi nomer handphone")
+        Alert.alert("Whoops!", "Tolong isi nomor handphone anda!")
       }
   }
 
@@ -74,7 +74,12 @@ const AuthenticationScreen = ({navigation}) => {
             style={styles.containerAvoiddingView}
         >
 
-            <Text style={styles.textTitle}>Masukan nomor telepon anda</Text>
+          <Gap height={30} />
+          <ILOtp />
+
+            <Text style={styles.textTitle}>Anda akan menerima 6 digit 
+                  kode OTP untuk verifikasi
+                  selanjutnya</Text>
             <View style={[
                   styles.containerInput,
                   {
@@ -91,6 +96,7 @@ const AuthenticationScreen = ({navigation}) => {
                   style={styles.phoneInput}
                   placeholder="81344433323"
                   keyboardType='numeric'
+                  maxLength={11}
                   value={phoneNumber}
                   onChangeText={onChangePhone}
                   secureTextEntry={false}
@@ -98,22 +104,24 @@ const AuthenticationScreen = ({navigation}) => {
                   onBlur={onChangeBlur}
                   autoFocus={focusInput}            
                 />
+
+              <View style={styles.viewBottom}>
+                        <TouchableOpacity onPress={onPressContinue}>
+                            <View style={[
+                                styles.btnContinue,
+                                {
+                                  backgroundColor: phoneNumber ? '#3987E5' : 'gray'
+                                }
+                              ]}>
+                              <Text style={styles.textContinue}>Continue</Text>
+                            </View>
+                        </TouchableOpacity>
+              </View>
             </View>
 
         </KeyboardAvoidingView>
 
-        <View style={styles.viewBottom}>
-                  <TouchableOpacity onPress={onPressContinue}>
-                      <View style={[
-                          styles.btnContinue,
-                          {
-                            backgroundColor: phoneNumber ? '#3987E5' : 'gray'
-                          }
-                        ]}>
-                        <Text style={styles.textContinue}>Continue</Text>
-                      </View>
-                  </TouchableOpacity>
-            </View>
+
     </View>
   )
 }
@@ -123,7 +131,8 @@ export default AuthenticationScreen
 const styles = StyleSheet.create({
     container:{
       flex: 1,
-      alignItems: 'center'
+      alignItems: 'center',
+      backgroundColor: '#FFFF'
     },
     containerAvoiddingView:{
       alignItems: 'center',
@@ -131,16 +140,19 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     textTitle:{
-      marginBottom: 50,
+      marginBottom: 30,
       marginTop: 50,
-      fontFamily: 'Montserrat-SemiBold',
-      fontSize: 15
+      fontFamily: 'Montserrat-Medium',
+      textAlign: 'center',
+      fontSize: normalizeFont(16),
+      color: '#5E5E5E'
+      
     },
     containerInput: {
       flexDirection: 'row',
       paddingHorizontal: 12,
       borderRadius: 10,
-      backgroundColor: 'white',
+      backgroundColor: '#F6F5FA',
       alignItems: 'center',
       borderBottomWidth: 1.5
     },
@@ -152,12 +164,15 @@ const styles = StyleSheet.create({
     phoneInput: {
       marginLeft: 5,
       flex: 1,
-      height: 50
+      height: 70,
+      fontFamily: fonts.semiBold,
+      color: 'gray',
+      fontSize: normalizeFont(14)
     },
     viewBottom: {
       flex: 1,
       justifyContent: 'flex-end',
-      marginBottom: 50,
+      
       alignItems: 'center'
     },
     btnContinue:{
@@ -171,6 +186,7 @@ const styles = StyleSheet.create({
       color: 'white', 
       alignItems: 'center',
       textAlign: 'center',
-      fontFamily: 'Montserrat-SemiBold'
+      fontFamily: 'Montserrat-SemiBold',
+      fontSize: normalizeFont(15)
     }
 })
