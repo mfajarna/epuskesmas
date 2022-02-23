@@ -8,10 +8,9 @@ import AuthenticationScreen from '../pages/auth/AuthenticationScreen';
 import OtpScreen from '../pages/auth/OtpScreen';
 import SplashScreen from '../pages/SplashScreen';
 import Loginscreen from '../pages/LoginScreen';
-
-
-
-
+import RegisterScreen from '../pages/RegisterScreen';
+import RegisterAuth from '../pages/RegisterAuth';
+import HomeScreen from '../pages/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +41,25 @@ const Routes = () => {
                 <Stack.Screen
                     name = "InputOTP" 
                     component={OtpScreen}
+                    options={{ headerShown: false}}
+                />
+
+                
+                <Stack.Screen
+                    name = "Register" 
+                    component={RegisterScreen}
+                    options={{ headerShown: false}}
+                />
+
+                <Stack.Screen
+                    name = "RegisterAuth" 
+                    component={RegisterAuth}
+                    options={{ headerShown: false}}
+                />
+
+                <Stack.Screen
+                    name = "HomeScreen" 
+                    component={HomeScreen}
                     options={{ headerShown: false}}
                 />
             </Stack.Navigator>

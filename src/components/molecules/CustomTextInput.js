@@ -3,9 +3,10 @@ import React from 'react'
 import { color } from '../../utils/colors'
 import { fonts } from '../../utils/fonts'
 
-const CustomTextInput = ({placeholder, ...restProps}) => {
+const CustomTextInput = ({text,placeholder, ...restProps}) => {
   return (
     <View>
+      <Text style={styles.text}>{text}</Text>
       <TextInputRN
         style={styles.input}
         placeholder={placeholder}
@@ -20,20 +21,19 @@ export default CustomTextInput
 
 const styles = StyleSheet.create({
     input:{
-        shadowColor: "#000",
+ 
         borderRadius: 6,
-        backgroundColor: color.white,
-        padding: 7,
-        
+        backgroundColor: '#F8F8F8',
+        padding: 9,
+        borderBottomWidth: 1,
+        borderColor: color.primary,
         fontFamily: fonts.medium,
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 11,
-            },
-            shadowOpacity: 0.55,
-            shadowRadius: 14.78,
 
-            elevation: 22,
-                }
+      },
+      text:{
+        fontFamily: fonts.medium,
+        fontSize: 13,
+        color: '#070707',
+        marginBottom: 10
+      }
 })

@@ -1,14 +1,20 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { clear } from 'react-native/Libraries/LogBox/Data/LogBoxData';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 import { normalizeFont } from '../../utils/normalizeFont';
 import { color } from '../../utils/colors';
-import CustomButton from '../../components/molecules/CustomButton';
+import { useDispatch } from 'react-redux';
+import { registerAction, setLoading } from '../../utils/redux/action';
+import auth from '@react-native-firebase/auth'
+import Header from '../../components/atoms/Header';
+import { IlOtpVerif } from '../../assets/illustration';
+import Gap from '../../components/atoms/Gap';
+import { showMessage } from '../../utils/showMessage';
+
 
 const OtpScreen = ({route,navigation}) => {
 
-  const {phone,code} = route.params;
+  const {phone,code,dataRegister} = route.params;
+  const dispatch = useDispatch()
   const lengthInput = 6;
   let textInput = useRef(null)
   let clockCall = null
@@ -17,10 +23,20 @@ const OtpScreen = ({route,navigation}) => {
   const[intervalVal, setIntervalVal] = useState("")
   const[countdown, setCountDown] = useState(defaultCountdown)
   const[enableResend, setEnableResend] = useState(false)
+  const[confirm,setConfirm] = useState(null);
+  const[focusInput, setFocusInput] = useState(true)
+  
 
-  console.log('confirm: ', code)
 
   useEffect(() => {
+      textInput.focus()
+  }, [])
+
+
+
+  useEffect(() => {
+    dispatch(setLoading(false))
+
     clockCall = setInterval(() => {
       decrementClock()
 
@@ -45,6 +61,15 @@ const OtpScreen = ({route,navigation}) => {
     
   }
 
+  const onChangeFocus = () => {
+    setFocusInput(true)
+  }
+
+  const onChangeBlur = () => {
+    setFocusInput(true)
+  }
+
+
   const onChangeText = (val) => {
     setIntervalVal(val)
   }
@@ -53,43 +78,82 @@ const OtpScreen = ({route,navigation}) => {
     setIntervalVal("")
 
     navigation.goBack();
+    
 
   }
 
-  const onResendOTP = () => {
+  const onResendOTP = async () => {
       if(enableResend)
       {
-        setCountDown(defaultCountdown)
-        setEnableResend(false)
-        clearInterval(clockCall)
+         try{
+           const confirmation = await auth().signInWithPhoneNumber("+62"+phone)
+           setConfirm(confirmation)
 
-        clockCall = setInterval(() => {
-          decrementClock()
+           setCountDown(defaultCountdown)
+           setEnableResend(false)
+           clearInterval(clockCall)
+  
+          clockCall = setInterval(() => {
+            decrementClock()
         }, 1000)
+
+         }catch(error)
+        {
+          showMessage(error.message)
+        }
+
       }
+
+
+      
   }
 
   const onVerification = async () => {
       try{
-        await confirm.confirm(intervalVal)
+        
+        dispatch(setLoading(true))
+        
+        if(confirm == null)
+        {
+          await code.confirm(intervalVal)
+
+
+          dispatch(registerAction(dataRegister,navigation))
+        }else{
+          
+          await confirm.confirm(intervalVal)
+
+          dispatch(registerAction(dataRegister, navigation))
+        }
+
       }catch(error)
       {
-        Alert.alert('Whoops!', error.message)
+        dispatch(setLoading(false))
+        // showMessage(error.message)
+
+        Alert.alert(error.message);
+        
       }
   }
 
-  useEffect(() => {
-      textInput.focus()
-  }, [])
+
 
   return (
     <View style={styles.container}>
+
+      <Header
+        title="Konfirmasi OTP"
+        onBack={() => navigation.goBack()}
+      />
         <KeyboardAvoidingView
           behavior='padding'
           keyboardVerticalOffset={50}
           style={styles.containerAvoiddingView}
         >
+          <Gap height={20} />
+          <IlOtpVerif />
 
+          <Gap height={20} />
           <Text style={styles.titleStyle}>
             Masukan kode OTP yang dikirimkan via SMS ke nomor 0{phone}
           </Text>
@@ -98,11 +162,14 @@ const OtpScreen = ({route,navigation}) => {
             <TextInput
               ref = {(input) => textInput = input}
               onChangeText={onChangeText}
-              style={{width: 0, height: 0}}
+              style={{width: 200, height: 100, backgroundColor: 'red'}}
               value={intervalVal}
               maxLength={lengthInput}
               returnKeyType="done"
               keyboardType='numeric'
+              onFocus={onChangeFocus}
+              onBlur={onChangeBlur}
+              autoFocus={focusInput} 
             />
           </View>
 
@@ -131,30 +198,34 @@ const OtpScreen = ({route,navigation}) => {
 
           </View>
 
-          <View style={styles.bottomView}> 
-            <TouchableOpacity onPress={onChangeNumber}>
-              <View style={styles.btnChangeNumber}>
-                  <Text style={styles.textChange}>Ganti nomor</Text>
-              </View>
-            </TouchableOpacity>
 
-            <TouchableOpacity onPress={onResendOTP}>
-              <View style={styles.btnResend}>
-                  <Text style={[
-                    styles.textResend,
-                    {
-                      color: enableResend ? '#3987E5' : 'grey'
-                    }
-                    
-                    ]}>Resend OTP ({countdown})</Text>
-              </View>
-            </TouchableOpacity>
-        </View>
 
 
         </KeyboardAvoidingView>
 
+
+            
+
         <View style={styles.viewVerifikasi}>
+              <View style={styles.bottomView}> 
+                  <TouchableOpacity onPress={onChangeNumber}>
+                    <View style={styles.btnChangeNumber}>
+                        <Text style={styles.textChange}>Ganti nomor</Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={onResendOTP}>
+                    <View style={styles.btnResend}>
+                        <Text style={[
+                          styles.textResend,
+                          {
+                            color: enableResend ? '#3987E5' : 'grey'
+                          }
+                          
+                          ]}>Resend OTP ({countdown})</Text>
+                    </View>
+                  </TouchableOpacity>
+              </View>
                 <TouchableOpacity onPress={onVerification}>
                             <View style={
                                 styles.btnVerifikasi
@@ -182,10 +253,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   titleStyle:{
-    margin: 50,
-    marginBottom: 50,
+    margin: 0,
+    marginBottom: 20,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: normalizeFont(14),
+    fontSize: 14,
     textAlign: 'center',
   
   },
@@ -217,15 +288,11 @@ const styles = StyleSheet.create({
   },
   cellText:{
     textAlign: 'center',
-    fontSize: normalizeFont(16),
+    fontSize: 16,
     fontFamily: 'Montserrat-SemiBold'
   },
   bottomView:{
     flexDirection: 'row',
-    flex: 1,
-
-    marginBottom: 55,
-
     
   },
   btnChangeNumber:{
@@ -238,8 +305,8 @@ const styles = StyleSheet.create({
   textChange: {
     color: '#3987E5',
     alignItems: 'center',
-    fontFamily: 'Montserrat-Normal',
-    fontSize: normalizeFont(15)
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 15
   },
   btnResend: {
     width: 150,
@@ -250,8 +317,8 @@ const styles = StyleSheet.create({
   },
   textResend: {
     alignItems: 'center',
-    fontFamily: 'Montserrat-Normal',
-    fontSize: normalizeFont(15)
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 15
   },
   btnVerifikasi:{
     width: 250,
@@ -272,6 +339,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: normalizeFont(15)
+    fontSize: 15
   }
 })

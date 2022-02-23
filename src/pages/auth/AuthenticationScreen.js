@@ -5,23 +5,33 @@ import { ILOtp } from '../../assets/illustration'
 import Gap from '../../components/atoms/Gap'
 import { normalizeFont } from '../../utils/normalizeFont'
 import { fonts } from '../../utils/fonts'
+import { useDispatch } from 'react-redux'
+import { setLoading } from '../../utils/redux/action'
+import { showMessage } from '../../utils/showMessage'
+import Header from '../../components/atoms/Header'
 
-const AuthenticationScreen = ({navigation}) => {
+
+const AuthenticationScreen = ({navigation,route}) => {
+
+  const dispatch = useDispatch();
+
+  const{dataRegister} = route.params;
+
+  var no_handphone = dataRegister.no_handphone;
+
+  useEffect(() => {
+      dispatch(setLoading(false))
+
+  }, [])
 
   let textInput = useRef(null)
-  const[phoneNumber, setPhoneNumber] = useState("")
+  const[phoneNumber, setPhoneNumber] = useState(no_handphone)
   const[focusInput, setFocusInput] = useState(true)
 
 
   // if null, no sms has been sent
   const[confirm, setConfirm] = useState(null)
 
-
-  const signInWithPhoneNumber = async () => {
-      const confirmation = await auth.signInWithPhoneNumber(phoneNumber)
-
-      setConfirm(confirmation)
-  }
 
   const onChangePhone = (number) => {
       setPhoneNumber(number)
@@ -31,25 +41,28 @@ const AuthenticationScreen = ({navigation}) => {
       
       if(phoneNumber)
       {
+          dispatch(setLoading(true))
         try{
           const confirmation = await auth().signInWithPhoneNumber("+62"+phoneNumber)
-        
+          
+          
+            navigation.navigate('InputOTP', {
+              phone: phoneNumber,
+              code: confirmation,
+              dataRegister: dataRegister
+            })
+     
 
 
-          // console.log('confirm: ',confirm)
-  
-          navigation.navigate('InputOTP', {
-            phone: phoneNumber,
-            code: confirmation
-          })
         }catch(error)
         {
-            Alert.alert('Whoops', error.message())
+            dispatch(setLoading(false))
+            showMessage(error.message)
         }
        
       }if(phoneNumber === "")
       {
-        Alert.alert("Whoops!", "Tolong isi nomor handphone anda!")
+        showMessage("Tolong isi nomor handphone anda!")
       }
   }
 
@@ -67,7 +80,10 @@ const AuthenticationScreen = ({navigation}) => {
  
   return (
     <View style={styles.container}>
-        
+      <Header
+        title="Verifikasi nomor handphone"
+        onBack={() => navigation.goBack()}
+      />
         <KeyboardAvoidingView
             keyboardVerticalOffset={50}
             behavior={'padding'}
@@ -77,9 +93,7 @@ const AuthenticationScreen = ({navigation}) => {
           <Gap height={30} />
           <ILOtp />
 
-            <Text style={styles.textTitle}>Anda akan menerima 6 digit 
-                  kode OTP untuk verifikasi
-                  selanjutnya</Text>
+            <Text style={styles.textTitle}>Periksa nomor handphone anda, jika sudah benar lanjutkan untuk verifikasi</Text>
             <View style={[
                   styles.containerInput,
                   {
@@ -142,10 +156,10 @@ const styles = StyleSheet.create({
     textTitle:{
       marginBottom: 30,
       marginTop: 50,
-      fontFamily: 'Montserrat-Medium',
+      fontFamily: 'Montserrat-SemiBold',
       textAlign: 'center',
-      fontSize: normalizeFont(16),
-      color: '#5E5E5E'
+      fontSize: 16,
+      color: 'black'
       
     },
     containerInput: {
@@ -165,9 +179,9 @@ const styles = StyleSheet.create({
       marginLeft: 5,
       flex: 1,
       height: 70,
-      fontFamily: fonts.semiBold,
+      fontFamily: fonts.medium,
       color: 'gray',
-      fontSize: normalizeFont(14)
+      fontSize: 14
     },
     viewBottom: {
       flex: 1,
@@ -187,6 +201,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       textAlign: 'center',
       fontFamily: 'Montserrat-SemiBold',
-      fontSize: normalizeFont(15)
+      fontSize: 14
     }
 })

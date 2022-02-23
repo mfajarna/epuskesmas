@@ -20,7 +20,7 @@ export default CustomButton
 const styles = StyleSheet.create({
     container: color => ({
         backgroundColor: color,
-        padding: 15,
+        padding: 13,
         borderRadius: 8,
         shadowColor: "#000",
         shadowOffset: {

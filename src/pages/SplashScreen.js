@@ -1,18 +1,54 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import { Alert, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { color } from '../utils/colors'
 import { ICLogo } from '../assets/icon'
 import { normalizeFont } from '../utils/normalizeFont'
 import { fonts } from '../utils/fonts'
+import { useDispatch } from 'react-redux'
+import NotifService from '../utils/notification/NotifService'
+import { getUser } from '../utils/AsyncStoreServices'
 
 
 const SplashScreen = ({navigation}) => {
 
+    const dispatch = useDispatch();
+
+    const[registerToken, setRegisterToken] = useState('');
+    const [fcmRegistered, setFcmRegistered] = useState(false);
+
+    const onRegister = token => {
+        setRegisterToken(token.token);
+        setFcmRegistered(true);
+      };
+
+      const onNotif = notif => {
+        Alert.alert(notif.title, notif.message);
+      };
+
+    const notif = new NotifService(onRegister, onNotif);
+
+    const handlePerm = perms => {
+        Alert.alert('permission', JSON.stringify(perms));
+      };
+
+    dispatch({
+      type: "SET_DEVICE_TOKEN",
+      value: registerToken
+    })
+
+    const checkAuth = async () => {
+        const user = await getUser()
+
+        const isAuth = user.authenticated
+
+        return isAuth !== false
+          ? navigation.reset({index: 0, routes: [{name: 'HomeScreen'}]})
+          : navigation.replace('LoginScreen')
+    }
+
   useEffect(() => {
-    setTimeout(() => {
-        navigation.replace('LoginScreen')
-    }, 2000)
-  },[])
+    checkAuth()
+  },[registerToken])
 
   return (
     <View style={styles.container}>

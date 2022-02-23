@@ -1,0 +1,1 @@
+export const ENDPOINT_API = 'https://epuskesmas-backend.herokuapp.com/api'
