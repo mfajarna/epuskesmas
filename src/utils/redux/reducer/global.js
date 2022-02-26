@@ -3,6 +3,7 @@ const initGlobalState = {
     message: 'Error',
     isLoading: false,
     deviceToken: '',
+    isToast : false
   };
   
   export const globalReducer = (state = initGlobalState, action) => {
@@ -25,6 +26,14 @@ const initGlobalState = {
       return {
         ...state,
         deviceToken: action.value,
+      };
+    }
+
+    if(action.type === 'SET_TOAST')
+    {
+      return {
+        ...state,
+        isToast: action.value,
       };
     }
 

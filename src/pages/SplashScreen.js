@@ -42,7 +42,7 @@ const SplashScreen = ({navigation}) => {
         const isAuth = user.authenticated
 
         return isAuth !== false
-          ? navigation.reset({index: 0, routes: [{name: 'HomeScreen'}]})
+          ? navigation.reset({index: 0, routes: [{name: 'MainApp'}]})
           : navigation.replace('LoginScreen')
     }
 

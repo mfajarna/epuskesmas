@@ -7,7 +7,7 @@ import Loading from './components/atoms/Loading/Loading';
 import {Provider} from 'react-redux';
 import FlashMessage from 'react-native-flash-message';
 import store from './utils/redux/store';
-
+import Toast from 'react-native-toast-message';
 
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -22,6 +22,7 @@ const MainApp = () => {
       <Routes />
       <FlashMessage position="top" />
       {isLoading && <Loading />}
+      <Toast />
       </>
     )
     

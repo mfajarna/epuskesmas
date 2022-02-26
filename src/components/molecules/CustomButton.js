@@ -5,9 +5,9 @@ import { color } from '../../utils/colors'
 import { normalizeFont } from '../../utils/normalizeFont'
 
 
-const CustomButton = ({onPress, color, text}) => {
+const CustomButton = ({onPress, color, text, ...resProps}) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container(color)}>
+    <TouchableOpacity onPress={onPress} style={styles.container(color)} {...resProps}>
         <View style={{alignItems: 'center'}}>
             <Text style={styles.text}>{text}</Text>
         </View>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     }),
     text:{
         fontFamily: fonts.semiBold,
-        fontSize: normalizeFont(18),
+        fontSize: 15,
         color: color.white
     }
 })

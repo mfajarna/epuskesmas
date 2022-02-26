@@ -8,25 +8,49 @@ import { fonts } from '../utils/fonts'
 import { normalizeFont } from '../utils/normalizeFont'
 import CustomButton from '../components/molecules/CustomButton'
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading } from '../utils/redux/action'
+import { loginAction, setLoading } from '../utils/redux/action'
 import CustomButtonNoBorder from '../components/molecules/CustomButtonNoBorder'
+import UseForm from '../utils/useForm'
+import { showMessage } from '../utils/showMessage'
 
 
 const Loginscreen = ({navigation}) => {
 
   const dispatch = useDispatch();
 
+  const[form,setForm] = UseForm({
+    email: '',
+    password: ''
+  })
+
+
   // const{deviceToken} = useSelector(state => state.globalReducer);
 
 
   const onLogin = () => {
+      
       dispatch(setLoading(true))
 
+      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
 
-      setTimeout(() => {
+      if(form.email == "" || form.password == "")
+      {
+
           dispatch(setLoading(false))
-          
-      }, 2000)
+          showMessage('Data tidak boleh ada yang kosong!')
+
+          return false
+
+         
+      }if(reg.test(form.email) === false)
+      {
+          dispatch(setLoading(false))
+          showMessage('Format email tidak benar!')
+
+          return false
+      }else{
+          dispatch(loginAction(form, navigation))
+      }
   }
 
   const onRegister = () => {
@@ -49,6 +73,8 @@ const Loginscreen = ({navigation}) => {
       <CustomTextInput
             text="Email"
             placeholder="Silahkan masukan email anda..."
+            value={form.email}
+            onChangeText={(value) => setForm('email', value)}
       />
 
       <Gap height={25} />
@@ -56,6 +82,8 @@ const Loginscreen = ({navigation}) => {
       <CustomTextInput
             text="Password"
             placeholder="Silahkan masukan password anda..."
+            value={form.password}
+            onChangeText={(value) => setForm('password', value)}
             secureTextEntry
         />
 
