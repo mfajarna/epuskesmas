@@ -4,6 +4,10 @@ import { color } from '../utils/colors'
 import Header from '../components/atoms/Header'
 import * as ImagePicker from 'react-native-image-picker';
 import { showMessage } from '../utils/showMessage';
+import { fonts } from '../utils/fonts';
+import { IcUploadKtp } from '../assets/icon';
+import Gap from '../components/atoms/Gap';
+import CustomButton from '../components/molecules/CustomButton';
 
 
 const VerifikasiKtp = ({navigation}) => {
@@ -16,14 +20,15 @@ const VerifikasiKtp = ({navigation}) => {
       maxHeight: 250
   },
     response => {
-      const responsePhoto = response.assets[0]
+      const responsePhoto = response
 
       if(response.didCancel || response.error)
       {
           showMessage('Anda tidak memilih photo!')
       }else{
 
-        const source = {uri: responsePhoto.uri}
+        const dataPhoto = response.assets[0]
+        const source = {uri: dataPhoto.uri}
         setResponse(source)
         
 
@@ -40,15 +45,28 @@ const VerifikasiKtp = ({navigation}) => {
             title="Verifikasi KTP"
             onBack={() => navigation.navigate('MyProfileScreen')}
         />
+
+        <View style={styles.content}>
+            <Text style={styles.text}>Silahkan upload foto KTP</Text>
+
+            <TouchableOpacity onPress={addPhoto} style={styles.containerPhoto}>
+
+
+              {response ?  <Image source={response} style={styles.photo}></Image> 
+              
+              : <IcUploadKtp /> }
+            </TouchableOpacity>
+
+        <Gap height={10} />
+        <CustomButton
+            text="Upload KTP"
+            color={color.primary}
+        />
+
+            
+        </View>
       
- 
-        <TouchableOpacity onPress={addPhoto} style={styles.containerPhoto}>
-          <Text>Add photo</Text>
-        </TouchableOpacity>
-    
-
-
-      <Image source={response} style={styles.photo}></Image>
+  
     </View>
   )
 }
@@ -58,17 +76,34 @@ export default VerifikasiKtp
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor: color.background
+        backgroundColor: color.background,
+
     },
     photo:{
-      width: 200,
-      height: 200
+      width: 300,
+      height: 250
     },
     containerPhoto:{
-      flex: 1,
-      borderStyle: 'dashed',
+
       borderWidth: 1,
-      width: 500,
-      backgroundColor: 'white'
+      borderColor: color.primary,
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'white',
+      height: 300
+    },
+    text:{
+      fontFamily: fonts.semiBold,
+      fontSize: 15,
+      marginBottom: 20
+    },
+    content:{
+      flex: 1,
+      padding: 20
+    },
+    textKtp:{
+      fontFamily: fonts.medium,
+      color: '#89BBF8'
     }
 })

@@ -21,6 +21,7 @@ import IcSetting from './ic_setting.svg'
 import IcAbout from './ic_about.svg'
 import IcLogout from './ic_logout.svg'
 import IcArrowRight from './ic_arrow_right.svg'
+import IcUploadKtp from './ic_uploadktp.svg'
 
 export {
     IcMyProfile,
@@ -45,6 +46,7 @@ export {
     IcMessageActive,
     IcMessageNormal,
     IcProfileActive,
-    IcProfileNormal
+    IcProfileNormal,
+    IcUploadKtp
     
 }
