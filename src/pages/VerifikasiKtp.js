@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { color } from '../utils/colors'
 import Header from '../components/atoms/Header'
@@ -7,36 +7,61 @@ import { showMessage } from '../utils/showMessage';
 import { fonts } from '../utils/fonts';
 import { IcUploadKtp } from '../assets/icon';
 import Gap from '../components/atoms/Gap';
+import { useSelector , useDispatch} from 'react-redux';
 import CustomButton from '../components/molecules/CustomButton';
 
 
 const VerifikasiKtp = ({navigation}) => {
   const [response, setResponse] = useState('')
+  const {uploadKtpReducer} = useSelector(state => state);
+  const dispatch = useDispatch()
+
 
   const addPhoto = () => {
-    ImagePicker.launchImageLibrary(            {
+    ImagePicker.launchImageLibrary({
       quality: 1,
-      maxWidth: 250,
-      maxHeight: 250
+      maxWidth: 700,
+      maxHeight: 700
   },
     response => {
-      const responsePhoto = response
+        const responsePhoto = response
 
-      if(response.didCancel || response.error)
-      {
-          showMessage('Anda tidak memilih photo!')
-      }else{
+        if(response.didCancel || response.error)
+        {
+            showMessage('Anda tidak memilih photo!')
+        }else{
 
-        const dataPhoto = response.assets[0]
-        const source = {uri: dataPhoto.uri}
-        setResponse(source)
-        
+          const dataPhoto = response.assets[0]
+          const source = {uri: dataPhoto.uri}
+
+          const filePhoto = {
+            uri: dataPhoto.uri,
+            type: dataPhoto.type,
+            name: dataPhoto.name
+          }
+
+          setResponse(source)
+          
+
+          dispatch({type: 'SET_UPLOAD_PHOTO', value: filePhoto})
+          dispatch({type: 'SET_STATUS_UPLOAD', value: true})
+
+        }
+
 
       }
+    );
+  }
+
+  const onSubmit = async () => {
+      if(response)
+      {
+          // if photo not null do stuff
 
 
-    }
-  );
+      }else{
+        showMessage('Anda belum memilih foto')
+      }
   }
 
   return (
@@ -60,7 +85,8 @@ const VerifikasiKtp = ({navigation}) => {
         <Gap height={10} />
         <CustomButton
             text="Upload KTP"
-            color={color.primary}
+            color={color.primary} 
+            onPress={onSubmit}
         />
 
             
