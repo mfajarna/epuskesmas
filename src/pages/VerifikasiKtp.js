@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { color } from '../utils/colors'
 import Header from '../components/atoms/Header'
 import * as ImagePicker from 'react-native-image-picker';
@@ -9,46 +9,66 @@ import { IcUploadKtp } from '../assets/icon';
 import Gap from '../components/atoms/Gap';
 import { useSelector , useDispatch} from 'react-redux';
 import CustomButton from '../components/molecules/CustomButton';
+import axios from 'axios';
+import { ENDPOINT_API } from '../utils/httpClient';
+import { getUser } from '../utils/AsyncStoreServices';
+import { uploadKtpAction } from '../utils/redux/action/uploadktp';
 
 
 const VerifikasiKtp = ({navigation}) => {
   const [response, setResponse] = useState('')
   const {uploadKtpReducer} = useSelector(state => state);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const [token,setToken] = useState('')
+  const [dataPhoto, setDataPhoto] = useState({});
+
+
+  const userFetch = async () => {
+      const user = await getUser();
+
+      setToken(user.token);
+  }
+
+  console.log(token)
+
+  useEffect(() => {
+      userFetch()
+  },[])
 
 
   const addPhoto = () => {
     ImagePicker.launchImageLibrary({
-      quality: 1,
-      maxWidth: 700,
-      maxHeight: 700
+      quality: 0.5,
+      maxWidth: 200,
+      maxHeight: 200
   },
     response => {
-        const responsePhoto = response
 
+
+      console.log(response)
         if(response.didCancel || response.error)
         {
+
+
             showMessage('Anda tidak memilih photo!')
         }else{
 
           const dataPhoto = response.assets[0]
           const source = {uri: dataPhoto.uri}
 
+
           const filePhoto = {
             uri: dataPhoto.uri,
             type: dataPhoto.type,
-            name: dataPhoto.name
+            name: dataPhoto.fileName
           }
 
           setResponse(source)
+          setDataPhoto(filePhoto)
           
-
           dispatch({type: 'SET_UPLOAD_PHOTO', value: filePhoto})
           dispatch({type: 'SET_STATUS_UPLOAD', value: true})
-
         }
-
-
       }
     );
   }
@@ -56,8 +76,7 @@ const VerifikasiKtp = ({navigation}) => {
   const onSubmit = async () => {
       if(response)
       {
-          // if photo not null do stuff
-
+        dispatch(uploadKtpAction(token,dataPhoto))
 
       }else{
         showMessage('Anda belum memilih foto')
