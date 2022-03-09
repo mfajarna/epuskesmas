@@ -2,15 +2,16 @@ import axios from "axios";
 import { Alert } from "react-native";
 import { setLoading } from ".";
 import { setUser } from "../../AsyncStoreServices";
+import { ENDPOINT_API } from "../../httpClient";
 import { showMessage } from "../../showMessage";
 
 const API_HOST = {
-    url: 'https://epuskesmas-backend.herokuapp.com/api'
+    url: 'http://103.181.142.146/api'
 }
 
 
 export const loginAction = (dataLogin, navigation) => (dispatch) =>  {
-    axios.post(`${API_HOST.url}/pasien/login`, dataLogin)
+    axios.post(`${ENDPOINT_API}/pasien/login`, dataLogin)
         .then(res => {
             const token = `${res.data.data.token_type} ${res.data.data.access_token}`;
             const profile_pasien = res.data.data.user
@@ -45,7 +46,7 @@ export const loginAction = (dataLogin, navigation) => (dispatch) =>  {
 
 export const registerAction = (dataRegister, navigation) =>
  (dispatch) => {
-     axios.post(`${API_HOST.url}/pasien/register`, dataRegister)
+     axios.post(`${ENDPOINT_API}/pasien/register`, dataRegister)
         .then(res => {
 
             const token = `${res.data.data.token_type} ${res.data.data.access_token}`;

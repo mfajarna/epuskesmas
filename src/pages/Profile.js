@@ -6,7 +6,7 @@ import { IlUser } from '../assets/illustration'
 import { fonts } from '../utils/fonts'
 import { deleteUser, getUser } from '../utils/AsyncStoreServices'
 import ProfileComponent from '../components/molecules/ProfileComponent'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '../utils/redux/action/global'
 
 
@@ -14,6 +14,7 @@ const Profile = ({navigation}) => {
   const[nama,setNama] = useState('')
   const[email,setEmail] = useState('')
   const dispatch = useDispatch()
+
 
   const dataUser = async () => {
       dispatch(setLoading(true))
@@ -30,7 +31,8 @@ const Profile = ({navigation}) => {
   }
 
   const onProfile = () => {
-      navigation.navigate('MyProfileScreen')
+      navigation.reset({index:0, routes:[{name:'MyProfileScreen'}] })
+
   }
 
   const onLogout = async () => {
@@ -49,6 +51,7 @@ const Profile = ({navigation}) => {
 
   useEffect(() => {
       dataUser()
+
   },[])
 
 
@@ -56,7 +59,6 @@ const Profile = ({navigation}) => {
     <View style={styles.container}>
       <Header
         title="Profile"
-        onBack={() => navigation.navigate('MainApp')}
       />
       <ScrollView>
 

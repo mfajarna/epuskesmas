@@ -13,6 +13,7 @@ const DEFAULT_USER = {
   is_verification: '',
   is_verificationktp: false,
   authenticated: false,
+  status_ktp: ''
 };
 
 /**

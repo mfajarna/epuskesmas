@@ -1,28 +1,37 @@
 import axios from "axios"
+import { setUser } from "../../AsyncStoreServices";
 import { ENDPOINT_API } from "../../httpClient"
+import { showMessage } from "../../showMessage";
 
-const API_HOST = {
-    url: 'https://epuskesmas-backend.herokuapp.com/api'
-}
+
+const url =  'http://103.181.142.146/api'
 
 export const uploadKtpAction = 
-            (token, dataPhoto) => dispatch  => 
+            (token, dataPhoto, navigation) => dispatch  => 
             {
                 
                 const file = new FormData();
 
-                
-                
+            
                 file.append('file', dataPhoto)
-                // console.log(photoForUpload._parts[0][0])
-                axios.post(`${API_HOST.url}/pasien/updateFotoKtp`, file, {
+                axios.post(`${url}/pasien/updateFotoKtp`, file, {
                     headers: {
                         Authorization: token,
                         'Content-Type': 'multipart/form-data',
                     }
                 }).then(resUpload => {
-                    console.log('success',resUpload)
+
+                    showMessage('Berhasil upload foto KTP', 'success')
+
+                    navigation.reset({index:0, routes:[{name: 'MainApp'}]})
+
+
+
                 }).catch(errUpload => {
-                    console.log('error', errUpload)
+
+                    showMessage('Gagal upload foto KTP')
+                    console.log('error', errUpload.message)
                 })
             }
+
+            

@@ -2,7 +2,8 @@ const initUploadKtp ={
     uri: '',
     type: '',
     name: '',
-    isUploadPhoto: false
+    isUploadPhoto: false,
+    statusKtp: ''
 }
 
 export const uploadKtpReducer = (state=initUploadKtp, action) => {
@@ -21,6 +22,14 @@ export const uploadKtpReducer = (state=initUploadKtp, action) => {
             return{
                 ...state,
                 isUploadPhoto: action.value
+            }
+        }
+
+        if(action.type === "SET_STATUS_KTP")
+        {
+            return{
+                ...state,
+                statusKtp: action.value
             }
         }
 

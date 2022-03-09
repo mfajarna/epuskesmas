@@ -1,1 +1,1 @@
-export const ENDPOINT_API = 'https://epuskesmas-backend.herokuapp.com/api'
+export const ENDPOINT_API = 'http://103.181.142.146/api'

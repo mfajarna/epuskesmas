@@ -39,8 +39,8 @@ const VerifikasiKtp = ({navigation}) => {
   const addPhoto = () => {
     ImagePicker.launchImageLibrary({
       quality: 0.5,
-      maxWidth: 200,
-      maxHeight: 200
+      maxWidth: 500,
+      maxHeight: 500
   },
     response => {
 
@@ -76,7 +76,7 @@ const VerifikasiKtp = ({navigation}) => {
   const onSubmit = async () => {
       if(response)
       {
-        dispatch(uploadKtpAction(token,dataPhoto))
+        dispatch(uploadKtpAction(token,dataPhoto,navigation))
 
       }else{
         showMessage('Anda belum memilih foto')
