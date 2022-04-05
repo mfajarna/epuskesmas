@@ -9,51 +9,92 @@ import { IcNotif, IcUser } from '../assets/icon'
 import Gap from '../components/atoms/Gap'
 import CustomButton from '../components/molecules/CustomButton'
 import FiturComponent from '../components/molecules/FiturComponent'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '../utils/redux/action'
+import axios from 'axios'
+import { showMessage } from '../utils/showMessage'
+import { ENDPOINT_API } from '../utils/httpClient'
 
 const HomeScreen = ({navigation}) => {
 
-  const [name,setName] = useState('');
+  const[name,setName] = useState('');
   const[verifktp,setVerifKtp] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const[isStatusKtp, setIsStatusKtp] = useState('');
+  
 
+
+  // get data user
   const user = async () => {
-
         dispatch(setLoading(true))
         const dataUser = await getUser();
-
+    
         setVerifKtp(dataUser.is_verificationktp)
-
         setName(dataUser.nama_lengkap)
-
-       if(dataUser.is_verificationktp == false)
-       {
-          showToast('Verififkasi KTP anda untuk menggunakan fitur, klik notif!','error', onDanger)
-       }
 
        dispatch(setLoading(false))
 
        return Promise.resolve(dataUser)
   }
 
+  // get status verifikasi ktp
+  const statusVerifikasiKtp = async () => {
+
+      const dataUser = await getUser();
+      const id = dataUser.id;
+      const token = dataUser.token;
+
+      const result = await axios.get(`${ENDPOINT_API}/pasien/fetchStatusKtp?id=${id}`, {
+        headers: {
+            Authorization: token
+        }
+    }).then(res => {
+      setIsStatusKtp(res.data.data.status)
+      const status = res.data.data.status;
+
+
+      console.log('ini status:', status)
+
+
+    }).catch(errKtp => {
+        console.log(errKtp)
+        showMessage('Terjadi kesalahan saat mengambil data status KTP ', 'danger')
+    })
+
+    return Promise.all([
+      dataUser,
+      result
+    ])
+  }
 
   const onDanger = () => {
       Toast.hide();
-      navigation.navigate('MyProfileScreen')
+      navigation.reset({index:0, routes:[{name:'MyProfileScreen', params: {isStatusKtp}}] })
   }
 
   const onDaftarAntrian = () => {
       Alert.alert("Hallo")
   }
   
-
   useEffect(() => {
     user();
 
+    if(isStatusKtp == "")
+    {
+       showToast('Verififkasi KTP anda untuk menggunakan fitur, klik notif!','error', onDanger)
+    }
+
+    if(isStatusKtp == "Menunggu Konfirmasi")
+    {
+       showToast('KTP Anda sedang menunggu konfirmasi','error', onDanger)
+    }
+
   }, [])
 
-
+  useEffect(() => {
+      
+          statusVerifikasiKtp()
+  }, [isStatusKtp])
 
   return (
     <View style={styles.container}>
@@ -96,7 +137,7 @@ const HomeScreen = ({navigation}) => {
                   text="Daftar Antrian"
                   color={color.primary}
                   onPress={onDaftarAntrian}
-                  disabled={verifktp == true ? false : true}
+                  disabled={isStatusKtp == true ? false : true}
               />
       </View>
 
@@ -115,7 +156,7 @@ const HomeScreen = ({navigation}) => {
               title="Pemeriksaan"
               desc="Pilih pemeriksaan sesuai dengan gejala yang anda
               alami"
-              disabled={verifktp == true ? false : true}
+              disabled={isStatusKtp == "Sudah Konfirmasi" ? false : true}
             />
 
       <Gap height={13} />
@@ -123,7 +164,7 @@ const HomeScreen = ({navigation}) => {
               onPress={onDaftarAntrian}
               title="Riwayat Kesehatan"
               desc="Lihat riwayat kesehatan anda sesuai dengan pemeriksaan terakhir"
-              disabled={verifktp == true ? false : true}
+              disabled={isStatusKtp == "Sudah Konfirmasi" ? false : true}
           />
 
       <Gap height={13} />
@@ -131,7 +172,7 @@ const HomeScreen = ({navigation}) => {
               onPress={onDaftarAntrian}
               title="Informasi Kesehatan"
               desc="Informasi tentang dunia kesehatan"
-              disabled={verifktp == true ? false : true}
+              disabled={isStatusKtp == "Sudah Konfirmasi" ? false : true}
           />
 
       <Gap height={13} />
@@ -140,7 +181,7 @@ const HomeScreen = ({navigation}) => {
               title="Riwayat Obat"
               desc="Riwayat penggunaan obat sesuai dengan
               pemeriksaan"
-              disabled={verifktp == true ? false : true}
+              disabled={isStatusKtp == "Sudah Konfirmasi" ? false : true}
           />
 
       <Gap height={13} />
@@ -148,7 +189,7 @@ const HomeScreen = ({navigation}) => {
               onPress={onDaftarAntrian}
               title="Surat Rujukan"
               desc="Lihat surat rujukan untuk puskesmas"
-              disabled={verifktp == true ? false : true}
+              disabled={isStatusKtp == "Sudah Konfirmasi" ? false : true}
           />
 
       <Gap height={13} />

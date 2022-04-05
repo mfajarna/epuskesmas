@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@user_information';
 const DEFAULT_USER = {
+  id: '',
   token: '',
   nama_lengkap: '',
   alamat: '',
@@ -11,7 +12,7 @@ const DEFAULT_USER = {
   email: '',
   device_token: '',
   is_verification: '',
-  is_verificationktp: false,
+  is_verificationktp: '',
   authenticated: false,
   status_ktp: ''
 };

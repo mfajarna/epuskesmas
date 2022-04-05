@@ -8,11 +8,14 @@ import { deleteUser, getUser } from '../utils/AsyncStoreServices'
 import ProfileComponent from '../components/molecules/ProfileComponent'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '../utils/redux/action/global'
+import axios from 'axios'
+import { ENDPOINT_API } from '../utils/httpClient'
 
 
 const Profile = ({navigation}) => {
   const[nama,setNama] = useState('')
   const[email,setEmail] = useState('')
+  const[isStatusKtp, setIsStatusKtp] = useState('')
   const dispatch = useDispatch()
 
 
@@ -20,18 +23,41 @@ const Profile = ({navigation}) => {
       dispatch(setLoading(true))
 
       const user = await getUser()
+      const id = user.id;
+      const token = user.token;
 
 
       setNama(user.nama_lengkap)
       setEmail(user.email)
 
+
+     const result = await axios.get(`${ENDPOINT_API}/pasien/fetchStatusKtp?id=${id}`, {
+        headers: {
+            Authorization: token
+        }
+    }).then(res => {
+      setIsStatusKtp(res.data.data.status)
+      const status = res.data.data.status;
+
+
+      console.log('ini status:', status)
+
+
+    }).catch(errKtp => {
+        console.log(errKtp)
+        showMessage('Terjadi kesalahan saat mengambil data status KTP ', 'danger')
+    })
+
       dispatch(setLoading(false))
-      return Promise.resolve(user)
+      return Promise.all([
+        user,
+        result
+      ])
 
   }
 
   const onProfile = () => {
-      navigation.reset({index:0, routes:[{name:'MyProfileScreen'}] })
+      navigation.reset({index:0, routes:[{name:'MyProfileScreen', params: {isStatusKtp}}] })
 
   }
 

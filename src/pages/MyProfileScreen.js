@@ -11,7 +11,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { ENDPOINT_API } from '../utils/httpClient'
 
-const MyProfileScreen = ({navigation}) => {
+const MyProfileScreen = ({navigation, route}) => {
+
+  const params = route.params;
 
   const[statusKtp,setStatusKtp] = useState('');
 
@@ -130,6 +132,8 @@ const MyProfileScreen = ({navigation}) => {
 
   useEffect(() => {
       dataUser()
+
+      console.log('status', params)
      
   },[])
 

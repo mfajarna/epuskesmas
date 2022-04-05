@@ -15,9 +15,11 @@ export const loginAction = (dataLogin, navigation) => (dispatch) =>  {
         .then(res => {
             const token = `${res.data.data.token_type} ${res.data.data.access_token}`;
             const profile_pasien = res.data.data.user
+            const id = profile_pasien.id
 
             setUser({
                 token: token,
+                id: id,
                 nama_lengkap: profile_pasien.nama_lengkap,
                 alamat: profile_pasien.alamat,
                 jenis_kelamin: profile_pasien.jenis_kelamin,
@@ -26,22 +28,32 @@ export const loginAction = (dataLogin, navigation) => (dispatch) =>  {
                 email: profile_pasien.email,
                 device_token: profile_pasien.device_token,
                 is_verification: profile_pasien.is_verification,
-                is_verificationktp: false,
                 authenticated: true
             })
 
+
+
+            axios.get(`${ENDPOINT_API}/pasien/fetchStatusKtp?id=${id}`, {
+                headers: {
+                    Authorization: token
+                }
+            }).then(res => {
+                dispatch({
+                    type: "SET_STATUS_VERIFIKASI_KTP",
+                    value: res.data.data
+                })
+            }).catch(errKtp => {
+                console.log(errKtp)
+            })
+        
             dispatch(setLoading(false))
             
             navigation.reset({index: 0, routes: [{name: 'MainApp'}]});
         }).catch(err => {
             dispatch(setLoading(false))
             showMessage("Email atau password anda salah!")
-
-            console.log(err.response)
         })
 }
-
-
 
 
 export const registerAction = (dataRegister, navigation) =>
@@ -51,8 +63,10 @@ export const registerAction = (dataRegister, navigation) =>
 
             const token = `${res.data.data.token_type} ${res.data.data.access_token}`;
             const profile_pasien = res.data.data.data_pasien;
+            const id = profile_pasien.id
 
             setUser({
+                id: id,
                 token: token,
                 nama_lengkap: profile_pasien.nama_lengkap,
                 alamat: profile_pasien.alamat,
@@ -62,8 +76,20 @@ export const registerAction = (dataRegister, navigation) =>
                 email: profile_pasien.email,
                 device_token: profile_pasien.device_token,
                 is_verification: profile_pasien.is_verification,
-                is_verificationktp: false,
                 authenticated: true
+            })
+
+            axios.get(`${ENDPOINT_API}/pasien/fetchStatusKtp?id=${id}`, {
+                headers: {
+                    Authorization: token
+                }
+            }).then(res => {
+                dispatch({
+                    type: "SET_STATUS_VERIFIKASI_KTP",
+                    value: res.data.data.status
+                })
+            }).catch(errKtp => {
+                console.log(errKtp.response)
             })
 
             dispatch(setLoading(false))

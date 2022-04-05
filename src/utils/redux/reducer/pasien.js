@@ -1,5 +1,6 @@
 const initPasien = {
-    kodePasien: []
+    kodePasien: [],
+    statusVerifikasiKtp: []
 }
 
 
@@ -11,6 +12,14 @@ export const pasienReducer = (state = initPasien, action) => {
         return{
             ...state,
             kodePasien: action.value
+        }
+    }
+
+    if(action.type === 'SET_STATUS_VERIFIKASI_KTP')
+    {
+        return{
+            ...state,
+            statusVerifikasiKtp: action.value
         }
     }
 

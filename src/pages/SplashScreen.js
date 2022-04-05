@@ -7,6 +7,7 @@ import { fonts } from '../utils/fonts'
 import { useDispatch } from 'react-redux'
 import NotifService from '../utils/notification/NotifService'
 import { getUser } from '../utils/AsyncStoreServices'
+import { getVerifikasiKTP } from '../utils/redux/action/pasien'
 
 
 const SplashScreen = ({navigation}) => {
@@ -38,12 +39,21 @@ const SplashScreen = ({navigation}) => {
 
     const checkAuth = async () => {
         const user = await getUser()
-
         const isAuth = user.authenticated
+        const idUser = user.id
+        const token = user.token
 
-        return isAuth !== false
-          ? navigation.reset({index: 0, routes: [{name: 'MainApp'}]})
-          : navigation.replace('LoginScreen')
+        if(isAuth !== false)
+        {
+
+          
+          dispatch(getVerifikasiKTP(idUser, navigation, token))
+          
+        }else{
+          navigation.replace('LoginScreen')
+        }
+
+        return Promise.resolve(user)
     }
 
   useEffect(() => {
