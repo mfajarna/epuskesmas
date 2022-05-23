@@ -21,7 +21,7 @@ const HomeScreen = ({navigation}) => {
   const[verifktp,setVerifKtp] = useState(false);
   const dispatch = useDispatch();
   const[isStatusKtp, setIsStatusKtp] = useState('');
-  
+  const[statusKtp, setStatusKtp] = useState('');
 
 
   // get data user
@@ -37,35 +37,41 @@ const HomeScreen = ({navigation}) => {
        return Promise.resolve(dataUser)
   }
 
-  // get status verifikasi ktp
-  const statusVerifikasiKtp = async () => {
 
-      const dataUser = await getUser();
-      const id = dataUser.id;
-      const token = dataUser.token;
+  const fetchStatusKtp = async () => {
+    const user = await getUser();
 
-      const result = await axios.get(`${ENDPOINT_API}/pasien/fetchStatusKtp?id=${id}`, {
-        headers: {
-            Authorization: token
-        }
-    }).then(res => {
+    const token = user.token;
+
+    var statusKtp;
+
+
+    axios.get(`${ENDPOINT_API}/pasien/fetchKtp`, {
+      headers: {
+          Authorization: token,
+      }
+  }).then(res => {
+      setStatusKtp(res.data.data.status)
       setIsStatusKtp(res.data.data.status)
-      const status = res.data.data.status;
+      statusKtp = res.data.data.status
 
+      console.log('status ktp', statusKtp)
 
-      console.log('ini status:', status)
+  }).catch(err => {
+      console.log('ktp',err.message)
+  })
 
-
-    }).catch(errKtp => {
-        console.log(errKtp)
-        showMessage('Terjadi kesalahan saat mengambil data status KTP ', 'danger')
-    })
-
-    return Promise.all([
-      dataUser,
-      result
-    ])
+  if(statusKtp == null)
+  {
+     showToast('Verififkasi KTP anda untuk menggunakan fitur, klik notif!','error', onDanger)
   }
+
+  if(statusKtp == "Menunggu Konfirmasi")
+  {
+     showToast('KTP Anda sedang menunggu konfirmasi','error', onDanger)
+  }
+
+}
 
   const onDanger = () => {
       Toast.hide();
@@ -75,26 +81,29 @@ const HomeScreen = ({navigation}) => {
   const onDaftarAntrian = () => {
       Alert.alert("Hallo")
   }
+
+
+  useEffect(() => {
+    fetchStatusKtp()
+
+    if(isStatusKtp == null)
+    {
+      dispatch(setLoading(true))
+    }
+    else{
+
+      dispatch(setLoading(false))
+    }
+
+    
+  }, [isStatusKtp])
   
   useEffect(() => {
     user();
 
-    if(isStatusKtp == "")
-    {
-       showToast('Verififkasi KTP anda untuk menggunakan fitur, klik notif!','error', onDanger)
-    }
-
-    if(isStatusKtp == "Menunggu Konfirmasi")
-    {
-       showToast('KTP Anda sedang menunggu konfirmasi','error', onDanger)
-    }
-
   }, [])
 
-  useEffect(() => {
-      
-          statusVerifikasiKtp()
-  }, [isStatusKtp])
+
 
   return (
     <View style={styles.container}>
@@ -136,8 +145,8 @@ const HomeScreen = ({navigation}) => {
             <CustomButton
                   text="Daftar Antrian"
                   color={color.primary}
-                  onPress={onDaftarAntrian}
-                  disabled={isStatusKtp == true ? false : true}
+                  onPress={() => navigation.navigate("PemeriksaanScreen")}
+                  disabled={isStatusKtp == "Sudah Konfirmasi" ? false : true}
               />
       </View>
 
@@ -152,7 +161,7 @@ const HomeScreen = ({navigation}) => {
 
       <Gap height={19} />
         <FiturComponent 
-              onPress={onDaftarAntrian}
+              onPress={() => navigation.navigate("PemeriksaanScreen")}
               title="Pemeriksaan"
               desc="Pilih pemeriksaan sesuai dengan gejala yang anda
               alami"

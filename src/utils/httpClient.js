@@ -1,1 +1,1 @@
-export const ENDPOINT_API = 'http://103.181.142.146/api'
+export const ENDPOINT_API = 'http://103.186.0.95/api'

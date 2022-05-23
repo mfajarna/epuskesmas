@@ -4,7 +4,7 @@ import { ENDPOINT_API } from "../../httpClient"
 import { showMessage } from "../../showMessage";
 
 
-const url =  'http://103.181.142.146/api'
+const url =  'http://103.186.0.95/api'
 
 export const uploadKtpAction = 
             (token, dataPhoto, navigation) => dispatch  => 
@@ -30,7 +30,7 @@ export const uploadKtpAction =
                 }).catch(errUpload => {
 
                     showMessage('Gagal upload foto KTP')
-                    console.log('error', errUpload.message)
+                    console.log('error', errUpload)
                 })
             }
 

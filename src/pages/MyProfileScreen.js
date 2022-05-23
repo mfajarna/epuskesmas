@@ -66,7 +66,10 @@ const MyProfileScreen = ({navigation, route}) => {
         jenis_kelamin: user.jenis_kelamin,
         no_ktp: user.no_ktp,
         no_handphone: user.no_handphone,
-        verifikasi_ktp: user.is_verificationktp == false ? "Belum Verifikasi" : "Verifikasi",
+        verifikasi_ktp: 
+        statusKtp == "Menunggu Konfirmasi" ? "Menunggu Konfirmasi" :
+        statusKtp == "" ? "Mohon upload KTP Anda"
+        : "Verifikasi",
       })
 
 

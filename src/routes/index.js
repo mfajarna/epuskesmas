@@ -16,6 +16,8 @@ import BottomNavigator from '../components/molecules/BottomNavigator';
 import MessageScreen from '../pages/MessageScreen';
 import MyProfileScreen from '../pages/MyProfileScreen';
 import VerifikasiKtp from '../pages/VerifikasiKtp';
+import PemeriksaanScreen from '../pages/PemeriksaanScreen';
+import DaftarPemeriksaanScreen from '../pages/DaftarPemeriksaanScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,12 +32,12 @@ const MainApp = () => {
             
             />
 
-            <Tab.Screen
+            {/* <Tab.Screen
                 options={{headerShown: false}}
                 name="Message"
                 component={MessageScreen}
             
-            />
+            /> */}
 
             <Tab.Screen
                 options={{headerShown: false}}
@@ -123,6 +125,18 @@ const Routes = () => {
                 <Stack.Screen
                     name = "VerifikasiKtpScreen" 
                     component={VerifikasiKtp}
+                    options={{ headerShown: false}}
+                />
+
+                <Stack.Screen
+                    name = "PemeriksaanScreen" 
+                    component={PemeriksaanScreen}
+                    options={{ headerShown: false}}
+                />
+                
+                <Stack.Screen
+                    name = "DaftarPemeriksaanScreen" 
+                    component={DaftarPemeriksaanScreen}
                     options={{ headerShown: false}}
                 />
             </Stack.Navigator>
