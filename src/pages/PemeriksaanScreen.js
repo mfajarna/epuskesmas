@@ -58,7 +58,7 @@ const PemeriksaanScreen = ({navigation}) => {
     <View style={styles.container}>
         <Header
           title="Daftar Pemeriksaan"
-          onBack={() => navigation.goBack()}
+          onBack={() => navigation.reset({index:0, routes:[{name:'HomeScreen'}] })}
         />
         <View style={styles.content}>
             <Text style={{
