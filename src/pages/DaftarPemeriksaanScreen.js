@@ -93,24 +93,19 @@ const DaftarPemeriksaanScreen = ({navigation, route}) => {
       const user = await getUser();
       const token = user.token;
 
-      const result = await axios.post(`${ENDPOINT_API}/pendaftaran/createPendaftaran`, {
-          data:{
-            form
-          }
-        },{
+      const result = await axios.post(`${ENDPOINT_API}/pendaftaran/createPendaftaran`, form,{
           headers:{
             'Authorization': token
           }
-        }
-        ).then(res => {
+        }).then(res => {
         showMessage('Berhasil membuat no antrian dan pemeriksaan', 'success')
 
         navigation.reset({index:0, routes:[{name:'HomeScreen'}] })
       }).catch(err => {
         showMessage('Gagal membuat no antrian dan pemeriksaan')
 
-        console.log(err)
-        navigation.reset({index:0, routes:[{name:'HomeScreen'}] })
+        console.log(err.response)
+        // navigation.reset({index:0, routes:[{name:'HomeScreen'}] })
       })
 
 
